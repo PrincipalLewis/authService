@@ -10,63 +10,32 @@ import scalikejdbc._
 import java.nio.charset.Charset
 
 object Application extends App {
-  classOf[org.postgresql.Driver]
-  val con_st = "jdbc:postgresql://172.17.0.3:5432/postgres?user=postgres&password=111"
 
-  def sti(list: String): Int = {
-    var res = Math.pow(10,(list.length)-1).toInt
-    var r = 0
-    list.foreach(x => {
-      r = r + res * (x.toInt - 48)
-      res = res/10
-    })
-    r
-  }
 
   val service = new Service[http.Request, http.Response] {
-    val kv = TrieMap.empty[String,String]
-
+    val kv = TrieMap.empty[String, String]
 
 
     def apply(req: http.Request): Future[http.Response] = {
       Future {
-        val conn = DriverManager.getConnection(con_st)
         val key = req.uri
         val value = req.contentString
         val resp = {
           http.Response(req.version, http.Status.Ok)
         }
-        req.method match{
+        req.method match {
           case http.Method.Get => {
-            kv.get(key) match{
+            kv.get(key) match {
               case None =>
                 resp.status_=(http.Status.NotFound)
               case Some(v) =>
-                resp.contentString_= (v)
+                resp.contentString_=(v)
             }
 
           }
-          case http.Method.Post =>
-            {
-              try {
-                val stm = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)
-
-                val rs = stm.executeQuery("SELECT * from acc")
-                breakable {
-                  while (rs.next) {
-                    if (rs.getString("login") == key && rs.getString("pass") == value.toString) {
-                      val prep = conn.prepareStatement("UPDATE ACC SET val = val + 1")
-                      prep.executeUpdate()
-
-                      println(sti(rs.getString("val"))+1)
-                      break
-                    }
-                  }
-                }
-              } finally {
-                conn.close()
-              }
-            }
+          case http.Method.Post => {
+            DBui.amount_connection(key,value)
+          }
         }
         resp
       }
@@ -74,8 +43,6 @@ object Application extends App {
   }
 
   val server = Http.serve("127.0.0.1:8885", service)
-
-
 
 
   Await.ready(server)
