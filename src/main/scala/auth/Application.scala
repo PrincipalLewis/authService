@@ -17,6 +17,7 @@ object Application extends App {
 
 
     def apply(req: http.Request): Future[http.Response] = {
+      //println("asdasdasdsdadasdadasd")
       Future {
         val key = req.uri
         val value = req.contentString
@@ -34,7 +35,13 @@ object Application extends App {
 
           }
           case http.Method.Post => {
-            DBui.amount_connection(key,value)
+            val str = DBui.amount_connection(key.substring(1),value)
+            str match {
+              case -1 =>
+                resp.status_= (http.Status.NotFound)
+              case _ =>
+                resp.contentString_=(str.toString)
+            }
           }
         }
         resp
