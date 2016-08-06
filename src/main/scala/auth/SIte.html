@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Login</title></title>
+
+<script language="JavaScript">
+    function post1()
+    {
+// 1. Создаём новый объект XMLHttpRequest
+var xhr = new XMLHttpRequest();
+
+// 2. Конфигурируем его: GET-запрос на URL 'phones.json'
+xhr.open('GET', '127.0.0.1:8885/vady', false);
+
+// 3. Отсылаем запрос
+xhr.send();
+
+
+    }
+</script>
+</head>
+<body>
+
+<input type="text" id="q1" name="userLogin">
+<input type="password" name="password">
+<input type="button" name="post" value="Send" onClick="post1()">
+<div id = "targetDiv">
+
+</div>
+</body>
+</html>
