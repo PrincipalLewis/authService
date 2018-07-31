@@ -4,11 +4,10 @@ scala_library(
 )
 
 jvm_binary(
-    name = 'main-bin',
+    name = 'main',
     source = 'Application.scala',
     main="auth.Application",
-    basename = 'hello-example',
     dependencies=[
-        'src/main/scala/auth/Application'
+        ':auth'
     ]
 )
